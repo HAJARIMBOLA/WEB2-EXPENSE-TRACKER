@@ -13,7 +13,11 @@ import { errorHandler } from './utils/errors'
 const app = express()
 
 app.use(helmet())
-app.use(cors())
+const FRONT_URL = process.env.FRONT_URL || 'http://localhost:3000'
+app.use(cors({
+  origin: FRONT_URL,
+  credentials: true,            // utile si tu envoies des cookies/Authorization cross-origin
+}))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(morgan('dev'))

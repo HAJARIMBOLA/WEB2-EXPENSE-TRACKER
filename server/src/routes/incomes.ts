@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express'
-import { prisma } from '../db/client.js'
-import { requireAuth, AuthedRequest } from '../middlewares/auth.js'
-import { asyncHandler, ApiError } from '../utils/errors.js'
+import { prisma } from '../db/client'
+import { requireAuth, AuthedRequest } from '../middlewares/auth'
+import { asyncHandler, ApiError } from '../utils/errors'
 import { z } from 'zod'
 import type { Prisma } from '@prisma/client'
 

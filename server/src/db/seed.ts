@@ -1,4 +1,5 @@
-import { prisma } from './client.js'
+// server/src/db/seed.ts
+import { prisma } from './client'
 
 const DEFAULT_CATEGORIES = [
   'Food','Transport','Housing','Utilities','Health','Entertainment','Education',
@@ -6,8 +7,11 @@ const DEFAULT_CATEGORIES = [
 ]
 
 export async function seedDefaultCategoriesForUser(userId: string) {
-  await prisma.category.createMany({
-    data: DEFAULT_CATEGORIES.map(name => ({ name, userId })),
-    skipDuplicates: true
-  })
+  for (const name of DEFAULT_CATEGORIES) {
+    await prisma.category.upsert({
+      where: { userId_name: { userId, name } }, // <- nécessite @@unique([userId, name])
+      update: {},
+      create: { name, userId },
+    })
+  }
 }
