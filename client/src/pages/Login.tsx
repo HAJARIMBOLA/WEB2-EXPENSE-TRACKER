@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../service/api"; // <= vérifie bien le chemin
+import { useAuth } from "../store/auth";
 
 export default function Login() {
   const nav = useNavigate();
@@ -16,10 +17,22 @@ export default function Login() {
     // diagnostic rapide
     console.log("[LOGIN] email:", email, "len", email.length, "| pwd len", password.length);
 
-    try {
-      setLoading(true);
-      const res = await api.post("/auth/login", { email, password }, { withCredentials: true });
-      console.log("[LOGIN ok]", res.data);
+try {
+  setLoading(true);
+  const res = await api.post("/auth/login", { email, password }, { withCredentials: true });
+  console.log("[LOGIN ok]", res.data);
+
+      // AJOUTEZ CES 4 LIGNES ICI :
+  if (res.data.accessToken) {
+    localStorage.setItem("token", res.data.accessToken);
+    console.log("[TOKEN SAVED]", res.data.accessToken);
+
+    // Mets-le dans ton Zustand aussi
+    useAuth.getState().setToken(res.data.accessToken);
+  } else {
+    console.error("[LOGIN] Pas de accessToken dans la réponse !");
+  }
+
       nav("/dashboard");
     } catch (err: any) {
       const msg =

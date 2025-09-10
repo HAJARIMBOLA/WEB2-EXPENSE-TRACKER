@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../service/api";
 
 type Summary = {
   monthStart: string;
@@ -14,19 +14,17 @@ export default function Dashboard() {
   const [summary, setSummary] = useState<Summary | null>(null);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    const fetchSummary = async () => {
-      try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/summary/monthly`, {
-          withCredentials: true,
-        });
-        setSummary(res.data);
-      } catch (err) {
-        setError("Impossible de charger le résumé.");
-      }
-    };
-    fetchSummary();
-  }, []);
+useEffect(() => {
+  const fetchSummary = async () => {
+    try {
+      const res = await api.get("/summary/monthly");
+      setSummary(res.data);
+    } catch (err) {
+      setError("Impossible de charger le résumé.");
+    }
+  };
+  fetchSummary();
+}, []);
 
   if (error) {
     return <p className="text-red-500 p-4">{error}</p>;
