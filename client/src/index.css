@@ -1,7 +1,16 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-body {
-  @apply bg-gray-100 text-gray-900;
+/* (optionnel) thème et couleurs perso */
+@theme {
+  --color-brand-500: #3b82f6;
+  --color-brand-600: #2563eb;
+  --color-brand-700: #1d4ed8;
+
+  --color-dark-bg:  #0b1220;
+  --color-dark-card:#121a2a;
+  --color-light-bg: #f5f7fb;
+  --color-light-card:#ffffff;
 }
+
+/* Utilitaires complémentaires */
+:root { color-scheme: light dark; }

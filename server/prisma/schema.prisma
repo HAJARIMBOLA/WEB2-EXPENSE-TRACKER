@@ -1,66 +1,64 @@
-datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
-}
-
 generator client {
   provider = "prisma-client-js"
 }
 
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum CategoryType {
+  EXPENSE
+  INCOME
+}
+
 model User {
-  id           String     @id @default(uuid())
+  id           String     @id @default(cuid())
   email        String     @unique
   passwordHash String
-  createdAt    DateTime   @default(now())
+  name         String?
   categories   Category[]
   expenses     Expense[]
   incomes      Income[]
+  createdAt    DateTime   @default(now())
 }
 
 model Category {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String       @id @default(cuid())
   name      String
-  createdAt DateTime @default(now())
-
+  type      CategoryType
+  user      User         @relation(fields: [userId], references: [id])
+  userId    String
   expenses  Expense[]
-  @@unique([userId, name])
+  incomes   Income[]
+
+  createdAt DateTime     @default(now())
+
+  @@unique([userId, name, type]) // un nom ne peut pas se dupliquer pour un type
 }
 
 model Expense {
-  id        String   @id @default(uuid())
-  amount    Float
-  type      String
-  date      DateTime?
-  startDate DateTime?
-  endDate   DateTime?
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  category  Category @relation(fields: [categoryId], references: [id])
+  id         String   @id @default(cuid())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  category   Category @relation(fields: [categoryId], references: [id])
   categoryId String
-  receipt   Receipt?
-  createdAt DateTime @default(now())
-}
 
-
-model Receipt {
-  id        String  @id @default(uuid())
-  expenseId String  @unique
-  expense   Expense @relation(fields: [expenseId], references: [id], onDelete: Cascade)
-  filePath  String
-  mimeType  String
-  sizeBytes Int
-  createdAt DateTime @default(now())
+  amount     Decimal  @db.Decimal(12, 2)
+  date       DateTime @default(now())
+  note       String?
+  createdAt  DateTime @default(now())
 }
 
 model Income {
-  id          String   @id @default(uuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  amount      Float
-  date        DateTime
-  source      String
-  description String?
-  createdAt   DateTime @default(now())
+  id         String   @id @default(cuid())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId String
+
+  amount     Decimal  @db.Decimal(12, 2)
+  date       DateTime @default(now())
+  note       String?
+  createdAt  DateTime @default(now())
 }
